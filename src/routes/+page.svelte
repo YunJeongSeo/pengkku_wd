@@ -731,7 +731,7 @@
 	.wedding-text {
 		width: 100%;
 		font-family: 'Noto Serif', serif;
-		font-weight: 400;
+		font-weight: 500;
 		margin: 0;
 		font-size: 16px;
     line-height: 24px;
