@@ -4,13 +4,14 @@
 		onSubmit,
 	}: {
 		open: boolean;
-		onSubmit: (name: string, text: string, password: string) => void;
+		onSubmit: (name: string, text: string, password: string) => Promise<boolean>;
 	} = $props();
 
-	let closing  = $state(false);
-	let name     = $state('');
-	let text     = $state('');
-	let password = $state('');
+	let closing    = $state(false);
+	let name       = $state('');
+	let text       = $state('');
+	let password   = $state('');
+	let submitting = $state(false);
 
 	$effect(() => {
 		if (open) {
@@ -34,14 +35,15 @@
 		}, 300);
 	}
 
-	function submit() {
-		if (!name.trim() || !text.trim() || !password.trim()) return;
-		onSubmit(name.trim(), text.trim(), password.trim());
-		name = ''; text = ''; password = '';
-		close();
+	async function submit() {
+		if (!name.trim() || !text.trim() || !password.trim() || submitting) return;
+		submitting = true;
+		const ok = await onSubmit(name.trim(), text.trim(), password.trim());
+		submitting = false;
+		if (ok) { name = ''; text = ''; password = ''; close(); }
 	}
 
-	const canSubmit = $derived(name.trim() !== '' && text.trim() !== '' && password.trim() !== '');
+	const canSubmit = $derived(name.trim() !== '' && text.trim() !== '' && password.trim() !== '' && !submitting);
 </script>
 
 {#if open || closing}
@@ -105,7 +107,7 @@
 
 				<div class="submit-wrap">
 					<button class="submit-btn" onclick={submit} disabled={!canSubmit}>
-						작성완료
+						{submitting ? '등록 중…' : '작성완료'}
 					</button>
 				</div>
 

@@ -6,6 +6,7 @@
 	import NoticePopup from '$lib/NoticePopup.svelte';
 	import GuestbookPopup from '$lib/GuestbookPopup.svelte';
 	import GuestbookViewPopup from '$lib/GuestbookViewPopup.svelte';
+	import { type Msg, fetchMsgs, writeMsgs, deleteMsgs } from '$lib/guestbook';
 
 	const WEDDING = new Date('2026-12-12T16:00:00');
 
@@ -42,10 +43,7 @@
 	let bgmEl: HTMLAudioElement | null = null;
 	let bgmPlaying = $state(false);
 
-	interface Msg { id: number; name: string; text: string; date: string; password: string }
-	let msgs   = $state<Msg[]>([]);
-	let gbName = $state('');
-	let gbText = $state('');
+	let msgs = $state<Msg[]>([]);
 
 	// ─── 사진 src를 실제 경로로 교체하세요 ───────────────────────
 	// 커버 사진
@@ -127,12 +125,10 @@
 	};
 
 	onMount(() => {
-		dday = Math.ceil((WEDDING.getTime() - Date.now()) / 86400000);
+		const today = new Date(); today.setHours(0, 0, 0, 0);
+		const weddingDay = new Date(2026, 11, 12); // 자정 기준
+		dday = Math.round((weddingDay.getTime() - today.getTime()) / 86400000);
 
-		try {
-			const s = localStorage.getItem('wg');
-			if (s) msgs = JSON.parse(s);
-		} catch {}
 
 		const onScroll = () => {
 			const el = document.documentElement;
@@ -166,18 +162,33 @@
 		try { await navigator.clipboard.writeText(text); toast(`${label} 복사됨`); }
 		catch { toast('복사 실패'); }
 	}
-	function addMsg(name: string, text: string, password: string) {
-		const m: Msg = { id: Date.now(), name, text, date: new Date().toLocaleDateString('ko-KR'), password };
-		msgs = [m, ...msgs];
-		localStorage.setItem('wg', JSON.stringify(msgs));
-		toast('메시지가 등록되었습니다 ♡');
+	async function loadMsgs() {
+		try {
+			msgs = await fetchMsgs();
+		} catch {
+			toast('방명록을 불러오는데 실패했습니다.');
+		}
 	}
-	function deleteMsg(id: number, password: string): boolean {
-		const target = msgs.find(m => m.id === id);
-		if (!target || target.password !== password) return false;
-		msgs = msgs.filter(m => m.id !== id);
-		localStorage.setItem('wg', JSON.stringify(msgs));
-		return true;
+	async function addMsg(name: string, text: string, password: string): Promise<boolean> {
+		try {
+			await writeMsgs(name, text, password);
+			toast('메시지가 등록되었습니다 ♡');
+			await loadMsgs();
+			return true;
+		} catch {
+			toast('등록에 실패했습니다. 다시 시도해 주세요.');
+			return false;
+		}
+	}
+	async function deleteMsg(id: number, password: string): Promise<boolean> {
+		try {
+			await deleteMsgs(id, password);
+			// no-cors라 응답 확인 불가 → 1.5초 후 목록 새로고침으로 실제 삭제 여부 확인
+			setTimeout(() => loadMsgs(), 1500);
+			return true;
+		} catch {
+			return false;
+		}
 	}
 	async function shareLink() {
 		if (navigator.share) await navigator.share({ title: '제영헌 ♥ 윤정서 결혼합니다', url: location.href });
@@ -192,7 +203,15 @@
 		const sw = window.innerWidth - document.documentElement.clientWidth;
 		document.body.style.overflow = lbOpen ? 'hidden' : '';
 		document.body.style.paddingRight = lbOpen && sw > 0 ? `${sw}px` : '';
-		return () => { document.body.style.overflow = ''; document.body.style.paddingRight = ''; };
+		const vp = document.querySelector('meta[name="viewport"]');
+		if (vp) vp.setAttribute('content', lbOpen
+			? 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no'
+			: 'width=device-width, initial-scale=1');
+		return () => {
+			document.body.style.overflow = '';
+			document.body.style.paddingRight = '';
+			vp?.setAttribute('content', 'width=device-width, initial-scale=1');
+		};
 	});
 
 	function openLb(i: number) { lbIdx = i; lbOpen = true; }
@@ -511,7 +530,7 @@
 		<button class="lb-close" onclick={() => (lbOpen = false)}>✕</button>
 		<!-- svelte-ignore a11y_click_events_have_key_events -->
 		<!-- svelte-ignore a11y_no_static_element_interactions -->
-		<div onclick={(e) => e.stopPropagation()}>
+		<div class="lb-img-wrap" onclick={(e) => e.stopPropagation()}>
 			<img src={GALLERY_PHOTOS[lbIdx].src} alt={GALLERY_PHOTOS[lbIdx].alt} />
 		</div>
 		<button class="lb-arr lb-prev" onclick={(e) => { e.stopPropagation(); lbPrev(); }}>‹</button>
@@ -537,7 +556,7 @@
 			<button class="gb-btn" onclick={() => (gbWriteOpen = true)}>
 				방명록 작성하기
 			</button>
-			<button class="gb-btn" onclick={() => (gbViewOpen = true)}>
+			<button class="gb-btn" onclick={() => { gbViewOpen = true; loadMsgs(); }}>
 				방명록 전체보기
 			</button>
 		</div>
@@ -676,7 +695,7 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: 80px;
+		gap: clamp(36px, 18vw, 80px);
 	}
 
 	.cover-script-wrap {
@@ -687,7 +706,7 @@
 	}
 	.cover-script {
 		font-family: 'Playfair Display', serif;
-		font-size: 4.7rem;
+		font-size: clamp(2.8rem, 18.5vw, 4.7rem);
 		font-weight: 800;
 		color: var(--pink);
 		line-height: .9;
@@ -724,7 +743,7 @@
 
 	.cover-info {
 		text-align: center;
-		margin-top: 40px;
+		margin-top: clamp(20px, 10vw, 40px);
 		letter-spacing: -.5px;
 	}
 
@@ -733,8 +752,8 @@
 		font-family: 'Noto Serif', serif;
 		font-weight: 500;
 		margin: 0;
-		font-size: 16px;
-    line-height: 24px;
+		font-size: clamp(13px, 4vw, 16px);
+		line-height: clamp(20px, 6vw, 24px);
 	}
 
 	.cover-lorem {
@@ -764,14 +783,14 @@
 	.inv-header { margin-bottom: 1.6rem; }
 	.ko-title {
 		font-family: TmoneyRoundWind, 'Noto Serif KR', serif;
-		font-size: 20px; font-weight: 500; letter-spacing: .04em;
+		font-size: clamp(17px, 5vw, 20px); font-weight: 500; letter-spacing: .04em;
 		margin-top: .5rem; color: var(--text);
 	}
 	.inv-body { margin-bottom: 1.6rem; }
 	.description-wrapper { max-width: 290px; margin: 0 auto; }
 	.invite-body {
 		font-family: TmoneyRoundWind, 'Noto Serif KR', serif;
-		font-size: 1rem;
+		font-size: clamp(.875rem, 4vw, 1rem);
 		line-height: 1.8;
 		color: var(--sub);
 		letter-spacing: -.5px;
@@ -818,15 +837,15 @@
 
 	/* ── Date ───────────────────────────────────────────────── */
 .calendar-wrap {
-	width: 305px;
+	width: min(305px, 100%);
 	margin: 0 auto;
 }
 
 	.dt-main {
 		font-family: TmoneyRoundWind, 'Noto Serif KR', serif;
-		font-size: 20px; font-weight: 500; letter-spacing: -.5px; margin: 0 0 .3rem;
+		font-size: clamp(17px, 5vw, 20px); font-weight: 500; letter-spacing: -.5px; margin: 0 0 .3rem;
 	}
-	.dt-sub { font-family: TmoneyRoundWind, 'Noto Serif KR', serif; font-size: 16px; color: var(--sub); }
+	.dt-sub { font-family: TmoneyRoundWind, 'Noto Serif KR', serif; font-size: clamp(14px, 4vw, 16px); color: var(--sub); }
 	.dday-box {
 		display: inline-flex; align-items: center; justify-content: center;
 		gap: 4px;
@@ -850,7 +869,7 @@
 	/* ── Location ───────────────────────────────────────────── */
 	.loc-sec { text-align: center; }
 	.loc-info { margin: 1.6rem 0; }
-	.hall-name { font-size: 20px; font-weight: 500; margin-bottom: 14px; }
+	.hall-name { font-size: clamp(17px, 5vw, 20px); font-weight: 500; margin-bottom: 14px; }
 	.loc-detail { font-size: 14px; color: var(--sub); margin-bottom: 2px; }
 	.loc-address { font-size: 14px; color: var(--muted); margin-bottom: 18px; }
 	.loc-tel { font-size: 16px; color: var(--text); text-decoration: none; }
@@ -908,7 +927,7 @@
 	}
 	.tl-cover-script {
 		font-family: 'Playfair Display', serif;
-		font-size: 3rem;
+		font-size: clamp(2rem, 12vw, 3rem);
 		font-weight: 800;
 		color: #1d1d1d;
 		letter-spacing: -.03em;
@@ -1050,7 +1069,7 @@
 	/* ── Guestbook ──────────────────────────────────────────── */
 	.gb-sec { text-align: center; }
 	.gb-container { margin-top: 1.2rem; }
-	.gb-note { font-size: 16px; color: var(--sub); line-height: 1.6; margin-bottom: 1.6rem; }
+	.gb-note { font-size: clamp(14px, 4vw, 16px); color: var(--sub); line-height: 1.6; margin-bottom: 1.6rem; }
 	.gb-tools { display: flex; gap: .6rem; justify-content: center; flex-direction: column; align-items: center; }
 	.gb-btn {
 		flex: 1; width: 200px; padding: .75rem .5rem;
@@ -1078,7 +1097,7 @@
 	}
 	.acc-top { width: 100%; }
 	.acc-description {
-		font-size: 15px; color: var(--sub);
+		font-size: clamp(13px, 3.8vw, 15px); color: var(--sub);
 		line-height: 1.8; margin-top: .8rem;
 	}
 	.acc-body-wrap { width: 100%; }
@@ -1148,7 +1167,7 @@
 
 	.ending-names {
 		font-family: TmoneyRoundWind, 'Noto Serif KR', serif;
-		font-size: 20px; font-weight: 500;
+		font-size: clamp(17px, 5vw, 20px); font-weight: 500;
 		letter-spacing: 0; line-height: 2.5rem;
 		color: #1a1a1a; text-align: center;
 	}
@@ -1176,5 +1195,14 @@
 		padding: 6px 0 16px;
 		line-height: 1.6;
 		letter-spacing: -0.2px;
+	}
+
+	/* ── 소형 디바이스 (≤ 370px) 보정 ────────────────────────── */
+	@media (max-width: 370px) {
+		.cover { padding: 28px 18px; }
+		.tl-cover { padding: 28px 40px 28px 18px; }
+		.tl-item-info { padding: 14px 18px 0; }
+		.dday-box { min-width: 0; padding: 10px 16px; }
+		.acc-sec { padding: 24px 1.5rem 60px; }
 	}
 </style>

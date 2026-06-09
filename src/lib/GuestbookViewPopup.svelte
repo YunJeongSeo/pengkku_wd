@@ -1,5 +1,5 @@
 <script lang="ts">
-	interface Msg { id: number; name: string; text: string; date: string; password: string }
+	interface Msg { id: number; name: string; text: string; date: string }
 
 	let {
 		open = $bindable(),
@@ -8,7 +8,7 @@
 	}: {
 		open: boolean;
 		msgs: Msg[];
-		onDelete?: (id: number, password: string) => boolean;
+		onDelete?: (id: number, password: string) => Promise<boolean>;
 	} = $props();
 
 	let closing        = $state(false);
@@ -16,6 +16,7 @@
 	let deleteTargetId = $state<number | null>(null);
 	let deletePassword = $state('');
 	let deleteError    = $state(false);
+	let deleting       = $state(false);
 
 	$effect(() => {
 		if (open) {
@@ -60,14 +61,12 @@
 		deleteError = false;
 	}
 
-	function confirmDelete() {
-		if (!deleteTargetId) return;
-		const ok = onDelete?.(deleteTargetId, deletePassword);
-		if (ok) {
-			cancelDelete();
-		} else {
-			deleteError = true;
-		}
+	async function confirmDelete() {
+		if (!deleteTargetId || deleting) return;
+		deleting = true;
+		const ok = await onDelete?.(deleteTargetId, deletePassword);
+		deleting = false;
+		if (ok) { cancelDelete(); } else { deleteError = true; }
 	}
 </script>
 
@@ -133,7 +132,9 @@
 												bind:value={deletePassword}
 												onkeydown={(e) => e.key === 'Enter' && confirmDelete()}
 											/>
-											<button class="delete-confirm-btn" onclick={confirmDelete}>확인</button>
+											<button class="delete-confirm-btn" onclick={confirmDelete} disabled={deleting}>
+									{deleting ? '삭제 중…' : '확인'}
+								</button>
 											<button class="delete-cancel-btn" onclick={cancelDelete}>취소</button>
 										</div>
 										{#if deleteError}
