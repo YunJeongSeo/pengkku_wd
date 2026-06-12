@@ -412,9 +412,9 @@
 		<p class="navi-title">내비게이션</p>
 		<p class="navi-desc">원하시는 앱을 선택하시면 길안내가 시작됩니다.</p>
 		<div class="navi-btns">
-			<a href="https://map.naver.com/v5/search/벡스코" target="_blank" rel="noopener" class="navi-btn">네이버지도</a>
-			<a href="tmap://route?rGoName=벡스코&rGoX=129.1357&rGoY=35.1679" class="navi-btn">티맵</a>
-			<a href="https://map.kakao.com/link/map/벡스코,35.1679,129.1357" target="_blank" rel="noopener" class="navi-btn">카카오내비</a>
+			<a href="https://map.naver.com/v5/search/벡스코" target="_blank" rel="noopener" class="navi-btn naver">네이버지도</a>
+			<a href="tmap://route?rGoName=벡스코&rGoX=129.1357&rGoY=35.1679" class="navi-btn tmap">티맵</a>
+			<a href="https://map.kakao.com/link/map/벡스코,35.1679,129.1357" target="_blank" rel="noopener" class="navi-btn kakao">카카오내비</a>
 		</div>
 	</div>
 
@@ -900,8 +900,12 @@
 		display: flex; align-items: center; justify-content: center;
 		padding: .55rem .5rem;
 		border: 1px solid var(--line); border-radius: 8px;
-		font-size: 14px; color: var(--text); text-decoration: none;
+		font-size: 14px; color: #fff; text-decoration: none;
 		background: #fff; transition: background .15s;
+
+		&.naver { background-color: #03cd5e; }
+		&.tmap  { background-color: #4a4df7; }
+		&.kakao { background-color: #f7e111; }
 	}
 	.navi-btn:hover { background: var(--line); }
 
@@ -937,7 +941,7 @@
 		justify-content: center;
 		gap: 20px;
 		padding: 32px 48px 32px 24px;
-		background: #f8f5f0;
+		background: #fbfbfb;
 	}
 	.tl-cover-script {
 		font-family: 'Playfair Display', serif;
