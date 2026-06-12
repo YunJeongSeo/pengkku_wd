@@ -12,8 +12,8 @@
 	} = $props();
 
 	let closing        = $state(false);
-	let menuOpenId     = $state<number | null>(null);
-	let deleteTargetId = $state<number | null>(null);
+	let menuOpenIdx     = $state<number | null>(null);
+	let deleteTargetIdx = $state<number | null>(null);
 	let deletePassword = $state('');
 	let deleteError    = $state(false);
 	let deleting       = $state(false);
@@ -31,8 +31,8 @@
 	});
 
 	function close() {
-		menuOpenId = null;
-		deleteTargetId = null;
+		menuOpenIdx = null;
+		deleteTargetIdx = null;
 		deletePassword = '';
 		deleteError = false;
 		closing = true;
@@ -44,27 +44,27 @@
 		}, 300);
 	}
 
-	function toggleMenu(id: number) {
-		menuOpenId = menuOpenId === id ? null : id;
+	function toggleMenu(idx: number) {
+		menuOpenIdx = menuOpenIdx === idx ? null : idx;
 	}
 
-	function startDelete(id: number) {
-		deleteTargetId = id;
+	function startDelete(idx: number) {
+		deleteTargetIdx = idx;
 		deletePassword = '';
 		deleteError = false;
-		menuOpenId = null;
+		menuOpenIdx = null;
 	}
 
 	function cancelDelete() {
-		deleteTargetId = null;
+		deleteTargetIdx = null;
 		deletePassword = '';
 		deleteError = false;
 	}
 
 	async function confirmDelete() {
-		if (!deleteTargetId || deleting) return;
+		if (deleteTargetIdx === null || deleting) return;
 		deleting = true;
-		const ok = await onDelete?.(deleteTargetId, deletePassword);
+		const ok = await onDelete?.(msgs[deleteTargetIdx].id, deletePassword);
 		deleting = false;
 		if (ok) { cancelDelete(); } else { deleteError = true; }
 	}
@@ -93,23 +93,23 @@
 				<!-- 목록 -->
 				<div class="entry-list">
 					{#if msgs.length > 0}
-						{#each msgs as m}
+						{#each msgs as m, i}
 							<div class="entry-item">
 								<div class="entry-header">
 									<p class="entry-writer">{m.name}</p>
 									<div class="menu-wrap">
-										<button class="menu-btn" onclick={() => toggleMenu(m.id)}>
+										<button class="menu-btn" onclick={() => toggleMenu(i)}>
 											<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
 												<path d="M3.75 10C3.75 9.30964 4.30964 8.75 5 8.75C5.69036 8.75 6.25 9.30964 6.25 10C6.25 10.6904 5.69036 11.25 5 11.25C4.30964 11.25 3.75 10.6904 3.75 10Z" fill="#1D1D1D"/>
 												<path d="M13.75 10C13.75 9.30964 14.3097 8.75 15 8.75C15.6904 8.75 16.25 9.30964 16.25 10C16.25 10.6904 15.6904 11.25 15 11.25C14.3097 11.25 13.75 10.6904 13.75 10Z" fill="#1D1D1D"/>
 												<path d="M10 8.75C9.30965 8.75 8.75001 9.30964 8.75001 10C8.75001 10.6904 9.30965 11.25 10 11.25C10.6904 11.25 11.25 10.6904 11.25 10C11.25 9.30964 10.6904 8.75 10 8.75Z" fill="#1D1D1D"/>
 											</svg>
 										</button>
-										{#if menuOpenId === m.id}
+										{#if menuOpenIdx === i}
 											<!-- svelte-ignore a11y_click_events_have_key_events -->
 											<!-- svelte-ignore a11y_no_static_element_interactions -->
 											<div class="menu-dropdown" onclick={(e) => e.stopPropagation()}>
-												<button class="menu-item delete" onclick={() => startDelete(m.id)}>삭제</button>
+												<button class="menu-item delete" onclick={() => startDelete(i)}>삭제</button>
 											</div>
 										{/if}
 									</div>
@@ -118,7 +118,7 @@
 								<div class="entry-date"><span>{m.date}</span></div>
 
 								<!-- 비밀번호 확인 -->
-								{#if deleteTargetId === m.id}
+								{#if deleteTargetIdx === i}
 									<!-- svelte-ignore a11y_click_events_have_key_events -->
 									<!-- svelte-ignore a11y_no_static_element_interactions -->
 									<div class="delete-confirm" onclick={(e) => e.stopPropagation()}>
@@ -177,7 +177,10 @@
 		animation: slide-up 0.32s cubic-bezier(0.32, 0.72, 0, 1) forwards;
 		display: flex;
 		flex-direction: column;
-		margin-left: -14px;
+		margin-left: unset;
+	}
+	@media (min-width: 768px) {
+		.popup-wrapper { margin-left: -14px; }
 	}
 	.popup-wrapper.closing { animation: slide-down 0.30s cubic-bezier(0.32, 0.72, 0, 1) forwards; }
 

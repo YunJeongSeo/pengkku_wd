@@ -136,7 +136,9 @@
 		border-radius: 16px 16px 0 0;
 		padding-bottom: env(safe-area-inset-bottom, 0);
 		animation: slide-up 0.32s cubic-bezier(0.32, 0.72, 0, 1) forwards;
-		margin-left: -14px;
+	}
+	@media (min-width: 768px) {
+		.popup-wrapper { margin-left: -14px; }
 	}
 	.popup-wrapper.closing { animation: slide-down 0.30s cubic-bezier(0.32, 0.72, 0, 1) forwards; }
 

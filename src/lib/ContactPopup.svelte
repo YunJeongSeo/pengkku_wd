@@ -107,7 +107,9 @@
 		justify-content: center;
 		background: rgba(0, 0, 0, 0.35);
 		animation: overlay-in 0.25s ease forwards;
-		margin-left: -14px;
+	}
+	@media (min-width: 768px) {
+		.popup-stack { margin-left: -14px; }
 	}
 	.popup-wrapper {
 		width: 100%;

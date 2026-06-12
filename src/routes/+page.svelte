@@ -38,6 +38,7 @@
 		{ src: '/opt/YOON1582.webp', alt: '웨딩 사진 9' },
 		{ src: '/opt/YOON1506.webp', alt: '웨딩 사진 10' },
 	];
+	let mapEl: HTMLElement | null = null;
 	let endingEl: HTMLElement | null = null;
 	let endingRevealed = $state(false);
 	let bgmEl: HTMLAudioElement | null = null;
@@ -154,6 +155,16 @@
 		);
 		if (endingEl) endingObs.observe(endingEl);
 
+		// 카카오맵 초기화
+		const kakao = (window as any).kakao;
+		if (mapEl && kakao) {
+			kakao.maps.load(() => {
+				const coords = new kakao.maps.LatLng(35.1679, 129.1357);
+				const map = new kakao.maps.Map(mapEl, { center: coords, level: 4 });
+				new kakao.maps.Marker({ map, position: coords });
+			});
+		}
+
 		return () => { window.removeEventListener('scroll', onScroll); obs.disconnect(); emblaApi?.destroy(); endingObs.disconnect(); };
 	});
 
@@ -183,9 +194,9 @@
 	async function deleteMsg(id: number, password: string): Promise<boolean> {
 		try {
 			await deleteMsgs(id, password);
-			// no-cors라 응답 확인 불가 → 1.5초 후 목록 새로고침으로 실제 삭제 여부 확인
-			setTimeout(() => loadMsgs(), 1500);
-			return true;
+			await new Promise<void>(resolve => setTimeout(resolve, 1500));
+			await loadMsgs();
+			return !msgs.some(m => m.id === id);
 		} catch {
 			return false;
 		}
@@ -392,13 +403,9 @@
 	</div>
 
 	<!-- 지도 -->
-	<a href="https://map.kakao.com/link/map/벡스코,35.1690,129.1280" target="_blank" rel="noopener" class="map-box fi d2">
-		<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--terra)" stroke-width="1.4">
-			<path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
-			<circle cx="12" cy="9" r="2.5"/>
-		</svg>
-		<span>탭하여 카카오맵 열기</span>
-	</a>
+	<div class="map-box fi d2">
+		<div bind:this={mapEl} class="map-render"></div>
+	</div>
 
 	<!-- 내비게이션 -->
 	<div class="navigation fi d2">
@@ -406,8 +413,8 @@
 		<p class="navi-desc">원하시는 앱을 선택하시면 길안내가 시작됩니다.</p>
 		<div class="navi-btns">
 			<a href="https://map.naver.com/v5/search/벡스코" target="_blank" rel="noopener" class="navi-btn">네이버지도</a>
-			<a href="tmap://route?rGoName=벡스코&rGoX=129.1280&rGoY=35.1690" class="navi-btn">티맵</a>
-			<a href="https://map.kakao.com/link/map/벡스코,35.1690,129.1280" target="_blank" rel="noopener" class="navi-btn">카카오내비</a>
+			<a href="tmap://route?rGoName=벡스코&rGoX=129.1357&rGoY=35.1679" class="navi-btn">티맵</a>
+			<a href="https://map.kakao.com/link/map/벡스코,35.1679,129.1357" target="_blank" rel="noopener" class="navi-btn">카카오내비</a>
 		</div>
 	</div>
 
@@ -639,6 +646,8 @@
 		<img src={ENDING_SRC} alt="엔딩 사진" />
 		<div class="ending-text" class:revealed={endingRevealed}>
 			<div class="ending-text-content" class:visible={endingRevealed}>
+				<p class="ending-poem-body">예쁜 예감이 들었다.<br>우리는 언제나<br>손을 잡고 있게 될 것이다.</p>
+				<p class="ending-poem-title">&lt;연인, 이이체&gt;</p>
 				<p class="ending-names">제영헌 &amp; 윤정서</p>
 				<p class="ending-date">2026 · 12 · 12</p>
 			</div>
@@ -695,7 +704,7 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: clamp(36px, 18vw, 80px);
+		gap: clamp(36px, 18vw, 70px);
 	}
 
 	.cover-script-wrap {
@@ -751,6 +760,7 @@
 		width: 100%;
 		font-family: 'Noto Serif', serif;
 		font-weight: 500;
+		color: #121212;
 		margin: 0;
 		font-size: clamp(13px, 4vw, 16px);
 		line-height: clamp(20px, 6vw, 24px);
@@ -759,7 +769,8 @@
 	.cover-lorem {
 		font-size: 12px;
 		line-height: 18px;
-		margin-bottom: 8px;
+		margin-bottom: 6px;
+		color: #f8b6c7;
 	}
 	.cover-name-kr {
 		font-family: 'Noto Serif KR', serif;
@@ -779,7 +790,10 @@
 	}
 
 	/* ── Invitation ─────────────────────────────────────────── */
-	.inv-sec { text-align: center; }
+	.inv-sec {
+		text-align: center;
+		background-color: #fffefe;
+	}
 	.inv-header { margin-bottom: 1.6rem; }
 	.ko-title {
 		font-family: TmoneyRoundWind, 'Noto Serif KR', serif;
@@ -1124,6 +1138,7 @@
 	/* ── Ending ─────────────────────────────────────────────── */
 	.ending-area {
 		display: flex; flex-direction: column; align-items: center;
+		background-color: #ffffff;
 	}
 
 	/* 엔딩 사진 */
@@ -1141,7 +1156,7 @@
 	/* 슬라이드업 오버레이 */
 	.ending-text {
 		align-items: flex-end;
-		background: linear-gradient(to bottom, transparent 0%, #fafafa 60%);
+		background: linear-gradient(to bottom, transparent 0%, #00000099 60%);
 		bottom: 0; left: 0; right: 0;
 		display: flex;
 		height: 300%;
@@ -1165,16 +1180,30 @@
 	}
 	.ending-text-content.visible { opacity: 1; }
 
+	.ending-poem-title {
+		font-family: 'Noto Serif KR', serif;
+		font-size: 15px; font-weight: 500;
+		color: #cccccc; letter-spacing: .08em;
+		margin: 0;
+	}
+	.ending-poem-body {
+		font-family: 'Noto Serif KR', serif;
+		font-size: 20px; color: #ffffff;
+		line-height: 2; text-align: center;
+		margin: 0 0 16px;
+	}
+
 	.ending-names {
 		font-family: TmoneyRoundWind, 'Noto Serif KR', serif;
 		font-size: clamp(17px, 5vw, 20px); font-weight: 500;
 		letter-spacing: 0; line-height: 2.5rem;
-		color: #1a1a1a; text-align: center;
+		color: #ffecec; text-align: center;
+	  margin-top: 70px;
 	}
 	.ending-date {
 		font-family: TmoneyRoundWind, 'Noto Serif KR', serif;
 		font-size: 14px; letter-spacing: .18em;
-		color: var(--sub); text-align: center;
+		color: #c4c4c4; text-align: center;
 	}
 
 	/* 공유 버튼 */
@@ -1198,6 +1227,9 @@
 	}
 
 	/* ── 소형 디바이스 (≤ 370px) 보정 ────────────────────────── */
+	.map-box { width: 100%; height: 100%; border-radius: 12px; overflow: hidden; border: 1px solid var(--line); }
+	.map-render { width: 100%; height: 320px; }
+
 	@media (max-width: 370px) {
 		.cover { padding: 28px 18px; }
 		.tl-cover { padding: 28px 40px 28px 18px; }

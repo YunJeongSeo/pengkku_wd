@@ -27,7 +27,7 @@ body {
 .wrap {
 	max-width: 425px;
 	margin: 0 auto;
-	background: #fafafa;
+	background: #ffffff;
 }
 .wrap * {
 	-webkit-font-smoothing: antialiased;
