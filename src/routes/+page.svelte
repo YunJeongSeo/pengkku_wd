@@ -38,7 +38,6 @@
 		{ src: '/opt/YOON1582.webp', alt: '웨딩 사진 9' },
 		{ src: '/opt/YOON1506.webp', alt: '웨딩 사진 10' },
 	];
-	let mapEl: HTMLElement | null = null;
 	let endingEl: HTMLElement | null = null;
 	let endingRevealed = $state(false);
 	let bgmEl: HTMLAudioElement | null = null;
@@ -155,15 +154,13 @@
 		);
 		if (endingEl) endingObs.observe(endingEl);
 
-		// 카카오맵 초기화
-		const kakao = (window as any).kakao;
-		if (mapEl && kakao) {
-			kakao.maps.load(() => {
-				const coords = new kakao.maps.LatLng(35.1679, 129.1357);
-				const map = new kakao.maps.Map(mapEl, { center: coords, level: 4 });
-				new kakao.maps.Marker({ map, position: coords });
-			});
-		}
+		// 카카오 지도 퍼가기
+		new (window as any).daum.roughmap.Lander({
+			timestamp: '1781581063326',
+			key: '2r2v6cdrog2h',
+			mapWidth: '640',
+			mapHeight: '360'
+		}).render();
 
 		return () => { window.removeEventListener('scroll', onScroll); obs.disconnect(); emblaApi?.destroy(); endingObs.disconnect(); };
 	});
@@ -404,7 +401,7 @@
 
 	<!-- 지도 -->
 	<div class="map-box fi d2">
-		<div bind:this={mapEl} class="map-render"></div>
+		<div id="daumRoughmapContainer1781581063326" class="root_daum_roughmap root_daum_roughmap_landing"></div>
 	</div>
 
 	<!-- 내비게이션 -->
