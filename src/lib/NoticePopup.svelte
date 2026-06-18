@@ -11,12 +11,8 @@
 	}
 </script>
 
-{#if open || closing}
-	<!-- svelte-ignore a11y_click_events_have_key_events -->
-	<!-- svelte-ignore a11y_no_static_element_interactions -->
+<!-- {#if open || closing}
 	<div class="notice-overlay" class:closing onclick={close}>
-		<!-- svelte-ignore a11y_click_events_have_key_events -->
-		<!-- svelte-ignore a11y_no_static_element_interactions -->
 		<div class="notice-card" class:closing onclick={(e) => e.stopPropagation()}>
 			<p class="notice-label">안내말씀</p>
 			<p class="notice-msg">화환은 정중히 사양합니다</p>
@@ -28,7 +24,7 @@
 			<button class="notice-close" onclick={close}>확인</button>
 		</div>
 	</div>
-{/if}
+{/if} -->
 
 <style>
 	.notice-overlay {

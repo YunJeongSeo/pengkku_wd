@@ -12,6 +12,7 @@
 	let text       = $state('');
 	let password   = $state('');
 	let submitting = $state(false);
+	let pwError    = $state('');
 
 	$effect(() => {
 		if (open) {
@@ -35,8 +36,15 @@
 		}, 300);
 	}
 
+	const WEAK_PASSWORDS = ['1234', '0000', '1111', '2222', '3333', '4444', '5555', '6666', '7777', '8888', '9999'];
+
 	async function submit() {
 		if (!name.trim() || !text.trim() || !password.trim() || submitting) return;
+		if (WEAK_PASSWORDS.includes(password.trim())) {
+			pwError = '사용할 수 없는 비밀번호입니다.';
+			return;
+		}
+		pwError = '';
 		submitting = true;
 		const ok = await onSubmit(name.trim(), text.trim(), password.trim());
 		submitting = false;
@@ -103,6 +111,9 @@
 						autocomplete="new-password"
 						bind:value={password}
 					/>
+					{#if pwError}
+						<p class="pw-error">{pwError}</p>
+					{/if}
 				</div>
 
 				<div class="submit-wrap">
@@ -189,6 +200,8 @@
 	.text-field input:focus,
 	.text-field textarea:focus { border-color: var(--pink); }
 	.text-field textarea { min-height: 120px; resize: none; }
+
+	.pw-error { font-size: 13px; color: #E05555; margin: 4px 0 0; }
 
 	/* 제출 */
 	.submit-wrap { padding-top: 4px; }
