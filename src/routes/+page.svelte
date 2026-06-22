@@ -155,11 +155,16 @@
 		if (endingEl) endingObs.observe(endingEl);
 
 		// 카카오 지도 퍼가기
+		const mapEl = document.getElementById('daumRoughmapContainer1781581063326');
+		const mapBox = mapEl?.parentElement as HTMLElement | null;
+		const mapW = mapBox?.clientWidth || 640;
+		const mapH = Math.round(mapW * 360 / 640);
+		if (mapBox) mapBox.style.height = mapH + 'px';
 		new (window as any).daum.roughmap.Lander({
 			timestamp: '1781581063326',
 			key: '2r2v6cdrog2h',
-			mapWidth: '640',
-			mapHeight: '360'
+			mapWidth: String(mapW),
+			mapHeight: String(mapH)
 		}).render();
 
 		return () => { window.removeEventListener('scroll', onScroll); obs.disconnect(); emblaApi?.destroy(); endingObs.disconnect(); };
@@ -1228,7 +1233,7 @@
 	}
 
 	/* ── 소형 디바이스 (≤ 370px) 보정 ────────────────────────── */
-	.map-box { width: 100%; height: 100%; border-radius: 12px; overflow: hidden; border: 1px solid var(--line); }
+	.map-box { width: 100%; height: auto; border-radius: 12px; overflow: hidden; border: 1px solid var(--line); }
 	.map-render { width: 100%; height: 320px; }
 
 	@media (max-width: 370px) {
