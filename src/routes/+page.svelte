@@ -113,26 +113,26 @@
 	// ─── 계좌번호 교체하세요 ─────────────────────────────────────
 	const accounts = {
 		groom: [
-			{ label: '신랑 제영헌', bank: '카카오뱅크', num: '3333-00-0000000' },
-			{ label: '아버지 제민호', bank: '신한은행',  num: '110-000-000000'  },
-			{ label: '어머니 김점덕', bank: '국민은행',  num: '123-00-0000-000' },
+			{ label: '신랑 제영헌',   bank: '신한은행',  	 num: '110632960261',   },
+			{ label: '아버지 제민호', bank: 'IBK기업은행', num: '27009178801017', },
+			{ label: '어머니 김점덕', bank: '부산은행',    num: '110120241083', 	},
 		],
 		bride: [
-			{ label: '신부 윤정서',  bank: '카카오뱅크', num: '3333-00-0000000' },
-			{ label: '아버지 윤종수', bank: '우리은행',  num: '1002-000-000000' },
-			{ label: '어머니 최미정', bank: '농협은행',  num: '301-0000-0000-00' },
+			{ label: '신부 윤정서',   bank: '카카오뱅크', num: '3333312414359', },
+			{ label: '아버지 윤종수', bank: 'NH농협',  		num: '3560674693693', },
+			{ label: '어머니 최미정', bank: 'NH농협',  		num: '84512450818',   },
 		],
 	};
 
 	onMount(() => {
-		const today = new Date(); today.setHours(0, 0, 0, 0);
+		const today 		 = new Date(); today.setHours(0, 0, 0, 0);
 		const weddingDay = new Date(2026, 11, 12); // 자정 기준
 		dday = Math.round((weddingDay.getTime() - today.getTime()) / 86400000);
 
 
 		const onScroll = () => {
 			const el = document.documentElement;
-			scroll = (el.scrollTop / (el.scrollHeight - el.clientHeight)) * 100;
+			scroll 	 = (el.scrollTop / (el.scrollHeight - el.clientHeight)) * 100;
 		};
 		window.addEventListener('scroll', onScroll, { passive: true });
 
@@ -309,7 +309,7 @@
 				햇살처럼 따뜻하게 안아줄 수 있는<br />
 				늘 곁에서 서로를 웃게 해줄 수 있는<br />
 				소중한 사람을 만났습니다.<br /><br />
-				기쁜 날, 가까이서 축복해 주시면<br />
+				기쁜 날, 가까이에서 축복해 주시면<br />
 				더없는 기쁨으로 간직하겠습니다.
 			</p>
 		</div>
@@ -453,7 +453,7 @@
 <!-- ═══════════════════════════════════════════════════════════
      6. Our Story 타임라인
 ═══════════════════════════════════════════════════════════ -->
-<section class="sec-timeline">
+<section class="sec-timeline" style="display:none">
 	<div class="tl-viewport" bind:this={emblaEl}>
 		<div class="tl-container">
 			<!-- 커버 슬라이드 -->
