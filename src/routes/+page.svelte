@@ -27,16 +27,23 @@
 	let gallShowAll = $state(false);
 
 	const GALLERY_PHOTOS = [
-		{ src: '/opt/YOON1767.webp', alt: '웨딩 사진 1' },
-		{ src: '/opt/YOON2072.webp', alt: '웨딩 사진 2' },
-		{ src: '/opt/YOON2017.webp', alt: '웨딩 사진 3' },
-		{ src: '/opt/YOON1900.webp', alt: '웨딩 사진 4' },
-		{ src: '/opt/YOON1973.webp', alt: '웨딩 사진 5' },
-		{ src: '/opt/YOON1719.webp', alt: '웨딩 사진 6' },
-		{ src: '/opt/YOON1855.webp', alt: '웨딩 사진 7' },
-		{ src: '/opt/YOON1787.webp', alt: '웨딩 사진 8' },
-		{ src: '/opt/YOON1582.webp', alt: '웨딩 사진 9' },
-		{ src: '/opt/YOON1506.webp', alt: '웨딩 사진 10' },
+		{ src: '/opt/KakaoTalk_20260830_224846115.webp', alt: '웨딩 사진 1' },
+		{ src: '/opt/KakaoTalk_20260830_224846115_01.webp', alt: '웨딩 사진 2' },
+		{ src: '/opt/KakaoTalk_20260830_224846115_02.webp', alt: '웨딩 사진 3' },
+		{ src: '/opt/KakaoTalk_20260830_224846115_03.webp', alt: '웨딩 사진 4' },
+		{ src: '/opt/KakaoTalk_20260830_224846115_04.webp', alt: '웨딩 사진 5' },
+		{ src: '/opt/KakaoTalk_20260830_224846115_05.webp', alt: '웨딩 사진 6' },
+		{ src: '/opt/KakaoTalk_20260830_224846115_06.webp', alt: '웨딩 사진 7' },
+		{ src: '/opt/KakaoTalk_20260830_224846115_07.webp', alt: '웨딩 사진 8' },
+		{ src: '/opt/KakaoTalk_20260830_224846115_08.webp', alt: '웨딩 사진 9' },
+		{ src: '/opt/KakaoTalk_20260830_224846115_09.webp', alt: '웨딩 사진 10' },
+		{ src: '/opt/KakaoTalk_20260830_224846115_10.webp', alt: '웨딩 사진 11' },
+		{ src: '/opt/KakaoTalk_20260830_224846115_11.webp', alt: '웨딩 사진 12' },
+		{ src: '/opt/KakaoTalk_20260830_224846115_12.webp', alt: '웨딩 사진 13' },
+		{ src: '/opt/KakaoTalk_20260830_224846115_13.webp', alt: '웨딩 사진 14' },
+		{ src: '/opt/KakaoTalk_20260830_224846115_14.webp', alt: '웨딩 사진 15' },
+		{ src: '/opt/KakaoTalk_20260830_224846115_15.webp', alt: '웨딩 사진 16' },
+		{ src: '/opt/KakaoTalk_20260830_224846115_16.webp', alt: '웨딩 사진 17' },
 	];
 	let endingEl: HTMLElement | null = null;
 	let endingRevealed = $state(false);
@@ -55,21 +62,21 @@
 	const BRIDE_SRC = 'https://picsum.photos/seed/bride/300/400';
 	// 갤러리 (6장)
 	const photos = [
-		{ src: '/opt/YOON1895.webp', alt: '커버 사진' },      // [0]  커버
-		{ src: '/opt/YOON1895.webp', alt: '2024 사진 1' },    // [1]  2024
-		{ src: '/opt/YOON1895.webp', alt: '2024 사진 2' },    // [2]  2024
-		{ src: '/opt/YOON1895.webp', alt: '2025 사진 1' },    // [3]  2025
-		{ src: '/opt/YOON1895.webp', alt: '2025 사진 2' },    // [4]  2025
-		{ src: '/opt/YOON1895.webp', alt: '2019 사진 1' },    // [5]  2019
-		{ src: '/opt/YOON1895.webp', alt: '2019 사진 2' },    // [6]  2019
-		{ src: '/opt/YOON1895.webp', alt: '2020 사진 1' },    // [7]  2020
-		{ src: '/opt/YOON1895.webp', alt: '2020 사진 2' },    // [8]  2020
-		{ src: '/opt/YOON1895.webp', alt: '2021 사진 1' },    // [9]  2021
-		{ src: '/opt/YOON1895.webp', alt: '2021 사진 2' },    // [10] 2021
-		{ src: '/opt/YOON1895.webp', alt: '2022 사진 1' },    // [11] 2022
-		{ src: '/opt/YOON1895.webp', alt: '2022 사진 2' },    // [12] 2022
-		{ src: '/opt/YOON1895.webp', alt: '2023 사진 1' },    // [13] 2023
-		{ src: '/opt/YOON1895.webp', alt: '2023 사진 2' },    // [14] 2023
+		{ src: '/opt/KakaoTalk_20260830_224846115.webp', alt: '커버 사진' },      // [0]  커버
+		{ src: '/opt/KakaoTalk_20260830_224846115_01.webp', alt: '2024 사진 1' }, // [1]  2024
+		{ src: '/opt/KakaoTalk_20260830_224846115_02.webp', alt: '2024 사진 2' }, // [2]  2024
+		{ src: '/opt/KakaoTalk_20260830_224846115_03.webp', alt: '2025 사진 1' }, // [3]  2025
+		{ src: '/opt/KakaoTalk_20260830_224846115_04.webp', alt: '2025 사진 2' }, // [4]  2025
+		{ src: '/opt/KakaoTalk_20260830_224846115_05.webp', alt: '2019 사진 1' }, // [5]  2019
+		{ src: '/opt/KakaoTalk_20260830_224846115_06.webp', alt: '2019 사진 2' }, // [6]  2019
+		{ src: '/opt/KakaoTalk_20260830_224846115_07.webp', alt: '2020 사진 1' }, // [7]  2020
+		{ src: '/opt/KakaoTalk_20260830_224846115_08.webp', alt: '2020 사진 2' }, // [8]  2020
+		{ src: '/opt/KakaoTalk_20260830_224846115_09.webp', alt: '2021 사진 1' }, // [9]  2021
+		{ src: '/opt/KakaoTalk_20260830_224846115_10.webp', alt: '2021 사진 2' }, // [10] 2021
+		{ src: '/opt/KakaoTalk_20260830_224846115_11.webp', alt: '2022 사진 1' }, // [11] 2022
+		{ src: '/opt/KakaoTalk_20260830_224846115_12.webp', alt: '2022 사진 2' }, // [12] 2022
+		{ src: '/opt/KakaoTalk_20260830_224846115_13.webp', alt: '2023 사진 1' }, // [13] 2023
+		{ src: '/opt/KakaoTalk_20260830_224846115_14.webp', alt: '2023 사진 2' }, // [14] 2023
 	];
 
 	// ─── Our Story 내용 교체하세요 ──────────────────────────────
@@ -448,6 +455,30 @@
 
 </section>
 
+
+<!-- ═══════════════════════════════════════════════════════════
+     5-1. 식사 안내
+═══════════════════════════════════════════════════════════ -->
+<section class="sec" style="text-align:center">
+
+	<div class="inv-header fi">
+		<span class="lbl">MEAL</span>
+		<p class="ko-title">식사 안내</p>
+	</div>
+
+	<div class="inv-body fi d1">
+		<div class="description-wrapper">
+			<p class="invite-body">
+				예식 후 벡스코 지하 1층 더파티에<br />
+				식사가 준비되어 있습니다.<br /><br />
+				귀한 걸음 해주신 만큼<br />
+				맛있는 식사와 함께 따뜻한 시간 보내고 가세요.<br />
+				참석해 주셔서 진심으로 감사드립니다.
+			</p>
+		</div>
+	</div>
+
+</section>
 
 
 <!-- ═══════════════════════════════════════════════════════════
