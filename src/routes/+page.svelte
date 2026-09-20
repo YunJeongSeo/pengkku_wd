@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { slide } from 'svelte/transition';
+	import { slide, fly } from 'svelte/transition';
 	import EmblaCarousel, { type EmblaCarouselType } from 'embla-carousel';
 	import ContactPopup from '$lib/ContactPopup.svelte';
 	import NoticePopup from '$lib/NoticePopup.svelte';
@@ -51,6 +51,7 @@
 	let bgmPlaying = $state(false);
 
 	let msgs = $state<Msg[]>([]);
+	let gbLoading = $state(false);
 
 	// ─── 사진 src를 실제 경로로 교체하세요 ───────────────────────
 	// 커버 사진
@@ -183,10 +184,13 @@
 		catch { toast('복사 실패'); }
 	}
 	async function loadMsgs() {
+		gbLoading = true;
 		try {
 			msgs = await fetchMsgs();
 		} catch {
 			toast('방명록을 불러오는데 실패했습니다.');
+		} finally {
+			gbLoading = false;
 		}
 	}
 	async function addMsg(name: string, text: string, password: string): Promise<boolean> {
@@ -234,9 +238,18 @@
 		};
 	});
 
+	let lbDir = $state(1);
 	function openLb(i: number) { lbIdx = i; lbOpen = true; }
-	function lbPrev() { lbIdx = (lbIdx - 1 + GALLERY_PHOTOS.length) % GALLERY_PHOTOS.length; }
-	function lbNext() { lbIdx = (lbIdx + 1) % GALLERY_PHOTOS.length; }
+	function lbPrev() { lbDir = -1; lbIdx = (lbIdx - 1 + GALLERY_PHOTOS.length) % GALLERY_PHOTOS.length; }
+	function lbNext() { lbDir = 1; lbIdx = (lbIdx + 1) % GALLERY_PHOTOS.length; }
+
+	let lbTouchX = 0;
+	function lbTouchStart(e: TouchEvent) { lbTouchX = e.touches[0].clientX; }
+	function lbTouchEnd(e: TouchEvent) {
+		const dx = e.changedTouches[0].clientX - lbTouchX;
+		if (Math.abs(dx) < 40) return;
+		if (dx < 0) lbNext(); else lbPrev();
+	}
 	function scrollToStory() {
 		emblaApi?.scrollTo(1);
 	}
@@ -570,8 +583,20 @@
 		<button class="lb-close" onclick={() => (lbOpen = false)}>✕</button>
 		<!-- svelte-ignore a11y_click_events_have_key_events -->
 		<!-- svelte-ignore a11y_no_static_element_interactions -->
-		<div class="lb-img-wrap" onclick={(e) => e.stopPropagation()}>
-			<img src={GALLERY_PHOTOS[lbIdx].src} alt={GALLERY_PHOTOS[lbIdx].alt} />
+		<div
+			class="lb-img-wrap"
+			onclick={(e) => e.stopPropagation()}
+			ontouchstart={lbTouchStart}
+			ontouchend={lbTouchEnd}
+		>
+			{#key lbIdx}
+				<img
+					src={GALLERY_PHOTOS[lbIdx].src}
+					alt={GALLERY_PHOTOS[lbIdx].alt}
+					in:fly={{ x: lbDir * 300, duration: 280 }}
+					out:fly={{ x: -lbDir * 300, duration: 280 }}
+				/>
+			{/key}
 		</div>
 		<button class="lb-arr lb-prev" onclick={(e) => { e.stopPropagation(); lbPrev(); }}>‹</button>
 		<button class="lb-arr lb-next" onclick={(e) => { e.stopPropagation(); lbNext(); }}>›</button>
@@ -689,12 +714,14 @@
 
 	<!-- 공유 버튼 -->
 	<div class="share-kakao-wrap">
+		<!--
 		<button class="kkt-share" onclick={shareLink}>
 			<svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor">
 				<path d="M12 3C6.477 3 2 6.477 2 10.667c0 2.623 1.447 4.947 3.666 6.399L4.5 21l4.383-2.321C9.893 18.88 10.934 19 12 19c5.523 0 10-3.477 10-8.333S17.523 3 12 3z"/>
 			</svg>
 			카카오톡으로 초대장 보내기
 		</button>
+		-->
 		<button class="btn-link2" onclick={shareLink}>
 			<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 				<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
@@ -714,7 +741,7 @@
 <NoticePopup bind:open={noticeOpen} />
 <ContactPopup bind:open={contactOpen} />
 <GuestbookPopup bind:open={gbWriteOpen} onSubmit={addMsg} />
-<GuestbookViewPopup bind:open={gbViewOpen} {msgs} onDelete={deleteMsg} />
+<GuestbookViewPopup bind:open={gbViewOpen} {msgs} loading={gbLoading} onDelete={deleteMsg} />
 </div>
 
 <style>

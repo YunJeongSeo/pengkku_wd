@@ -3,12 +3,12 @@
 :root {
 	--bg:     #EEEEEE;
 	--bg2:    #F2F4F8;
-	--text:   #4d4c4c;
-	--sub:    #6E7380;
+	--text:   #333333;
+	--sub:    #555555;
 	--muted:  #ABABAB;
 	--line:   #E4E8EE;
 	/* --pink:   #fdc4d2; */
-	--pink:   #ffa2b9;
+	--pink:   #fe8ca8;
 	--blue2:  #7AADD8;
 	--terra:  #C07B58;
 	--sky-bg: #EBF1F8;
@@ -158,8 +158,8 @@ section:not(.cover) {
 
 /* Lightbox */
 .lb-ov { position: fixed; inset: 0; background: rgba(0,0,0,.94); z-index: 200; display: flex; align-items: center; justify-content: center; touch-action: none; }
-.lb-img-wrap { display: flex; align-items: center; justify-content: center; }
-.lb-img-wrap img { max-width: 90vw; max-height: 90vh; width: auto; height: auto; display: block; user-select: none; -webkit-user-drag: none; pointer-events: none; }
+.lb-img-wrap { position: relative; width: 90vw; height: 90vh; overflow: hidden; }
+.lb-img-wrap img { position: absolute; inset: 0; margin: auto; max-width: 90vw; max-height: 90vh; width: auto; height: auto; display: block; user-select: none; -webkit-user-drag: none; pointer-events: none; }
 .lb-close { position: absolute; top: 1rem; right: 1rem; color: rgba(255,255,255,.7); font-size: 1.8rem; background: none; border: none; cursor: pointer; }
 .lb-arr { position: absolute; top: 50%; transform: translateY(-50%); background: none; border: none; color: rgba(255,255,255,.6); font-size: 3rem; cursor: pointer; padding: 1.2rem; line-height: 1; }
 .lb-prev { left: 0; }

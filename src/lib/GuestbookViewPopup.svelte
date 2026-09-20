@@ -4,10 +4,12 @@
 	let {
 		open = $bindable(),
 		msgs,
+		loading = false,
 		onDelete,
 	}: {
 		open: boolean;
 		msgs: Msg[];
+		loading?: boolean;
 		onDelete?: (id: number, password: string) => Promise<boolean>;
 	} = $props();
 
@@ -92,7 +94,12 @@
 
 				<!-- 목록 -->
 				<div class="entry-list">
-					{#if msgs.length > 0}
+					{#if loading}
+						<div class="entry-loading">
+							<span class="spinner"></span>
+							<p>방명록을 불러오는 중...</p>
+						</div>
+					{:else if msgs.length > 0}
 						{#each msgs as m, i}
 							<div class="entry-item">
 								<div class="entry-header">
@@ -299,4 +306,21 @@
 		text-align: center; padding: 2rem 0;
 		font-family: TmoneyRoundWind, 'Noto Serif KR', serif;
 	}
+
+	.entry-loading {
+		display: flex; flex-direction: column; align-items: center; gap: 12px;
+		padding: 3rem 0;
+	}
+	.entry-loading p {
+		font-size: 14px; color: #ABABAB; margin: 0;
+		font-family: TmoneyRoundWind, 'Noto Serif KR', serif;
+	}
+	.spinner {
+		width: 22px; height: 22px;
+		border: 2px solid #E4E8EE;
+		border-top-color: var(--pink);
+		border-radius: 50%;
+		animation: spin 0.7s linear infinite;
+	}
+	@keyframes spin { to { transform: rotate(360deg); } }
 </style>
