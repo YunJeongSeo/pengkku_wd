@@ -166,7 +166,7 @@
 		const mapEl = document.getElementById('daumRoughmapContainer1781581063326');
 		const mapBox = mapEl?.parentElement as HTMLElement | null;
 		const mapW = mapBox?.clientWidth || 640;
-		const mapH = Math.round(mapW * 360 / 640);
+		const mapH = Math.round(mapW * 360 / 640) + 20;
 		if (mapBox) mapBox.style.height = mapH + 'px';
 		new (window as any).daum.roughmap.Lander({
 			timestamp: '1781581063326',
@@ -861,7 +861,7 @@
 		margin-top: .5rem; color: var(--text);
 	}
 	.inv-body { margin-bottom: 1.6rem; }
-	.description-wrapper { max-width: 290px; margin: 0 auto; }
+	.description-wrapper { margin: 0 auto; }
 	.invite-body {
 		font-family: TmoneyRoundWind, 'Noto Serif KR', serif;
 		font-size: clamp(.875rem, 4vw, 1rem);
@@ -1291,7 +1291,16 @@
 	}
 
 	/* ── 소형 디바이스 (≤ 370px) 보정 ────────────────────────── */
-	.map-box { width: 100%; height: auto; border-radius: 12px; overflow: hidden; border: 1px solid var(--line); }
+	.map-box {
+		width: calc(100% + 4rem);
+		margin-left: -2rem;
+		margin-right: -2rem;
+		height: auto;
+		border-radius: 0;
+		overflow: hidden;
+		border-top: 1px solid var(--line);
+		border-bottom: 1px solid var(--line);
+	}
 	.map-render { width: 100%; height: 320px; }
 
 	@media (max-width: 370px) {
@@ -1300,5 +1309,6 @@
 		.tl-item-info { padding: 14px 18px 0; }
 		.dday-box { min-width: 0; padding: 10px 16px; }
 		.acc-sec { padding: 24px 1.5rem 60px; }
+		.map-box { width: calc(100% + 3rem); margin-left: -1.5rem; margin-right: -1.5rem; }
 	}
 </style>

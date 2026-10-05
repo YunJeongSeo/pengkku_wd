@@ -22,6 +22,7 @@ body {
 	color: var(--text);
 	font-family: TmoneyRoundWind, 'Noto Serif KR', serif;
 	overflow-x: hidden;
+	word-break: auto-phrase;
 }
 
 .wrap {
